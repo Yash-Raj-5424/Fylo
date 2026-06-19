@@ -2,6 +2,7 @@ package fylo.controller;
 
 import com.sun.net.httpserver.HttpServer;
 import fylo.controller.handler.CORSHandler;
+import fylo.controller.handler.DeleteHandler;
 import fylo.controller.handler.DownloadHandler;
 import fylo.controller.handler.UploadHandler;
 import fylo.service.FileSharer;
@@ -39,6 +40,7 @@ public class FileController {
         server.createContext("/upload", new UploadHandler(fileSharer, uploadDir));
         server.createContext("/download", new DownloadHandler(fileSharer));
         server.createContext("/view", new DownloadHandler(fileSharer));
+        server.createContext("/file", new DeleteHandler(fileSharer));
         server.createContext("/", new CORSHandler());
 
     }

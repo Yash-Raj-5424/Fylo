@@ -47,3 +47,15 @@ export const downloadFile = async (code) => {
     throw new Error(`Download error: ${error.message}`);
   }
 };
+
+export const deleteFile = async (code) => {
+  const response = await fetch(`${API_URL}/file/${code}`, {
+    method: 'DELETE',
+  });
+
+  if (!response.ok) {
+    throw new Error(`Delete failed: ${response.statusText}`);
+  }
+
+  return true;
+};

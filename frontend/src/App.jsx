@@ -11,6 +11,10 @@ function App() {
     setSharedFiles(prev => [...prev, { code, fileName }]);
   };
 
+  const handleDelete = (code) => {
+    setSharedFiles(prev => prev.filter(f => f.code !== code));
+  };
+
   return (
     <div className="app-container">
       <header>
@@ -21,7 +25,7 @@ function App() {
       <main>
         <div className="content">
           <FileUpload onUploadSuccess={handleUploadSuccess} />
-          {sharedFiles.length > 0 && <ShareInfo files={sharedFiles} />}
+          {sharedFiles.length > 0 && <ShareInfo files={sharedFiles} onDelete={handleDelete} />}
         </div>
 
         <div className="divider"></div>

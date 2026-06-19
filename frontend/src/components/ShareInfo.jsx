@@ -1,3 +1,4 @@
+import { deleteFile } from '../services/api';
 import './ShareInfo.css';
 
 const PREVIEWABLE_EXTS = new Set([
@@ -13,7 +14,7 @@ function isPreviewable(filename) {
   return PREVIEWABLE_EXTS.has(filename.substring(dot + 1).toLowerCase());
 }
 
-export default function ShareInfo({ files }) {
+export default function ShareInfo({ files, onDelete }) {
   const handleCopyCode = (code) => {
     navigator.clipboard.writeText(code);
     alert(`Code ${code} copied to clipboard!`);
@@ -23,6 +24,16 @@ export default function ShareInfo({ files }) {
     const allCodes = files.map(f => f.code).join('\n');
     navigator.clipboard.writeText(allCodes);
     alert(`All ${files.length} codes copied to clipboard!`);
+  };
+
+  const handleDeleteClick = async (code) => {
+    if (!confirm('Delete this shared file? The code will no longer work.')) return;
+    try {
+      await deleteFile(code);
+      onDelete(code);
+    } catch (err) {
+      alert('Failed to delete: ' + err.message);
+    }
   };
 
   if (!files || files.length === 0) return null;
@@ -53,6 +64,7 @@ export default function ShareInfo({ files }) {
                     Preview
                   </button>
                 )}
+                <button className="delete-btn" onClick={() => handleDeleteClick(f.code)}>Delete</button>
               </td>
             </tr>
           ))}

@@ -51,6 +51,14 @@ public class FileSharer {
         return availableFiles.get(code);
     }
 
+    public boolean removeFile(String code) {
+        FileEntry entry = availableFiles.remove(code);
+        if (entry == null) return false;
+        File file = new File(entry.filePath);
+        if (file.exists()) file.delete();
+        return true;
+    }
+
     public static class FileEntry {
         public final String filePath;
         public final int port;
