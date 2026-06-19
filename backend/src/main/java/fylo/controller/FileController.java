@@ -28,15 +28,22 @@ public class FileController {
     public FileController(int port) throws IOException {
         this.fileSharer = new FileSharer();
         this.server = HttpServer.create(new InetSocketAddress(port), 0);
-        this.uploadDir = System.getProperty("java.io.tmpdir") + File.separator + "/fylo_uploads";
+        System.out.println("HttpServer created successfully");
+        String envDir = System.getenv("FYLO_UPLOAD_DIR");
+        if (envDir != null && !envDir.isBlank()) {
+            this.uploadDir = envDir;
+        } else {
+            this.uploadDir = new File(System.getProperty("java.io.tmpdir"), "fylo_uploads").getAbsolutePath();
+        }
+        System.out.println("Upload directory: " + uploadDir);
         this.executorService = Executors.newFixedThreadPool(10);
 
         File uploadDirectory = new File(uploadDir);
-        if (!uploadDirectory.exists()) {
-            uploadDirectory.mkdirs();
+        if (!uploadDirectory.exists() && !uploadDirectory.mkdirs()) {
+            throw new IOException("Failed to create upload directory: " + uploadDir);
         }
 
-        server.createContext("/upload", new UploadHandler(fileSharer));
+        server.createContext("/upload", new UploadHandler(fileSharer, uploadDir));
         server.createContext("/download", new DownloadHandler());
         server.createContext("/", new CORSHandler());
 

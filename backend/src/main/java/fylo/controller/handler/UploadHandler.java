@@ -15,9 +15,11 @@ import java.util.UUID;
 public class UploadHandler implements HttpHandler {
 
     private final FileSharer fileSharer;
+    private final String uploadDir;
 
-    public UploadHandler(FileSharer fileSharer) {
+    public UploadHandler(FileSharer fileSharer, String uploadDir) {
         this.fileSharer = fileSharer;
+        this.uploadDir = uploadDir;
     }
 
 
@@ -74,7 +76,7 @@ public class UploadHandler implements HttpHandler {
                 fileName = "unnamed_file";
             }
             String uniqueFileName = UUID.randomUUID() + "_" + new File(fileName).getName();
-            String filePath = File.separator + uniqueFileName;
+            String filePath = uploadDir + File.separator + uniqueFileName;
 
             try (FileOutputStream fos = new FileOutputStream(filePath)) {
                 fos.write(result.fileContent);
