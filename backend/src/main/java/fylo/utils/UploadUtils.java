@@ -10,6 +10,7 @@ public class UploadUtils {
     private static final SecureRandom RANDOM = new SecureRandom();
     private static final String ALPHANUMERIC = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
+    private static final long MAX_FILE_SIZE;
     private static final Set<String> BLOCKED_EXTENSIONS = new HashSet<>(Arrays.asList(
         "exe", "bat", "bin", "cmd", "com", "cpl", "gadget", "inf1", "ins", "inx", "isu",
         "jar", "jse", "js", "jsp", "class", "lnk", "msc", "msi", "msp", "mst",
@@ -19,6 +20,17 @@ public class UploadUtils {
     ));
 
     static {
+        long defaultMax = 50L * 1024 * 1024;
+        String envSize = System.getenv("FYLO_MAX_FILE_SIZE_MB");
+        if (envSize != null && !envSize.isBlank()) {
+            try {
+                defaultMax = Long.parseLong(envSize.trim()) * 1024 * 1024;
+            } catch (NumberFormatException e) {
+                System.err.println("Invalid FYLO_MAX_FILE_SIZE_MB, using default 50MB");
+            }
+        }
+        MAX_FILE_SIZE = defaultMax;
+
         String envBlocked = System.getenv("FYLO_BLOCKED_EXTENSIONS");
         if (envBlocked != null && !envBlocked.isBlank()) {
             String[] custom = envBlocked.split(",");
@@ -27,6 +39,10 @@ public class UploadUtils {
                 BLOCKED_EXTENSIONS.add(ext.trim().toLowerCase());
             }
         }
+    }
+
+    public static long getMaxFileSize() {
+        return MAX_FILE_SIZE;
     }
 
     public static int generateCode(){

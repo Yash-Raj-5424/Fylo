@@ -51,13 +51,39 @@ public class UploadHandler implements HttpHandler {
         }
 
         try {
+            long maxSize = UploadUtils.getMaxFileSize();
+            String contentLengthStr = requestHeaders.getFirst("Content-Length");
+            if (contentLengthStr != null) {
+                try {
+                    long contentLength = Long.parseLong(contentLengthStr);
+                    if (contentLength > maxSize) {
+                        String response = "File too large (max " + (maxSize / (1024 * 1024)) + "MB)";
+                        exchange.sendResponseHeaders(413, response.getBytes().length);
+                        try (OutputStream outStream = exchange.getResponseBody()) {
+                            outStream.write(response.getBytes());
+                        }
+                        return;
+                    }
+                } catch (NumberFormatException ignored) {}
+            }
+
             String boundary = contentType.substring(contentType.indexOf("boundary=") + 9);
 
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             byte[] buf = new byte[4096];
             int n;
+            long totalRead = 0;
             InputStream is = exchange.getRequestBody();
             while ((n = is.read(buf)) != -1) {
+                totalRead += n;
+                if (totalRead > maxSize) {
+                    String response = "File too large (max " + (maxSize / (1024 * 1024)) + "MB)";
+                    exchange.sendResponseHeaders(413, response.getBytes().length);
+                    try (OutputStream outStream = exchange.getResponseBody()) {
+                        outStream.write(response.getBytes());
+                    }
+                    return;
+                }
                 baos.write(buf, 0, n);
             }
             byte[] requestData = baos.toByteArray();

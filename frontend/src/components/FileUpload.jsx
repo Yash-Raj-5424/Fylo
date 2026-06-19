@@ -3,6 +3,7 @@ import { uploadFile } from '../services/api';
 import './FileUpload.css';
 
 const BLOCKED_EXTENSIONS = ['exe', 'bat', 'sh', 'jar', 'class', 'dll', 'vbs', 'ps1', 'msi', 'scr'];
+const MAX_FILE_SIZE_MB = 50;
 
 export default function FileUpload({ onUploadSuccess }) {
   const [loading, setLoading] = useState(false);
@@ -27,6 +28,11 @@ export default function FileUpload({ onUploadSuccess }) {
     const ext = file.name.split('.').pop()?.toLowerCase();
     if (ext && BLOCKED_EXTENSIONS.includes(ext)) {
       setError(`File type .${ext} is not allowed`);
+      return;
+    }
+
+    if (file.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
+      setError(`File too large (max ${MAX_FILE_SIZE_MB}MB)`);
       return;
     }
 
