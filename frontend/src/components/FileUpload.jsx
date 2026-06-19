@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { uploadFile } from '../services/api';
 import './FileUpload.css';
 
+const BLOCKED_EXTENSIONS = ['exe', 'bat', 'sh', 'jar', 'class', 'dll', 'vbs', 'ps1', 'msi', 'scr'];
+
 export default function FileUpload({ onUploadSuccess }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -22,12 +24,18 @@ export default function FileUpload({ onUploadSuccess }) {
       return;
     }
 
+    const ext = file.name.split('.').pop()?.toLowerCase();
+    if (ext && BLOCKED_EXTENSIONS.includes(ext)) {
+      setError(`File type .${ext} is not allowed`);
+      return;
+    }
+
     setLoading(true);
     setError('');
 
     try {
-      const port = await uploadFile(file);
-      onUploadSuccess(port, file.name);
+      const code = await uploadFile(file);
+      onUploadSuccess(code, file.name);
       e.target.reset();
       setFileName('');
     } catch (err) {

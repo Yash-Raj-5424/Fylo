@@ -6,6 +6,7 @@ import com.sun.net.httpserver.HttpHandler;
 import fylo.parser.MultipartParser;
 import fylo.parser.ParseResult;
 import fylo.service.FileSharer;
+import fylo.utils.UploadUtils;
 
 import java.io.*;
 import java.util.UUID;
@@ -78,6 +79,16 @@ public class UploadHandler implements HttpHandler {
             if (fileName == null || fileName.trim().isEmpty()) {
                 fileName = "unnamed_file";
             }
+
+            if (!UploadUtils.isAllowedFile(fileName)) {
+                String response = "File type not allowed: " + fileName;
+                exchange.sendResponseHeaders(400, response.getBytes().length);
+                try (OutputStream outStream = exchange.getResponseBody()) {
+                    outStream.write(response.getBytes());
+                }
+                return;
+            }
+
             String uniqueFileName = UUID.randomUUID() + "_" + new File(fileName).getName();
             String filePath = uploadDir + File.separator + uniqueFileName;
 
