@@ -5,10 +5,10 @@ import ShareInfo from './components/ShareInfo';
 import './App.css';
 
 function App() {
-  const [shareData, setShareData] = useState(null);
+  const [sharedFiles, setSharedFiles] = useState([]);
 
   const handleUploadSuccess = (code, fileName) => {
-    setShareData({ code, fileName });
+    setSharedFiles(prev => [...prev, { code, fileName }]);
   };
 
   return (
@@ -21,7 +21,7 @@ function App() {
       <main>
         <div className="content">
           <FileUpload onUploadSuccess={handleUploadSuccess} />
-          {shareData && <ShareInfo code={shareData.code} fileName={shareData.fileName} />}
+          {sharedFiles.length > 0 && <ShareInfo files={sharedFiles} />}
         </div>
 
         <div className="divider"></div>
