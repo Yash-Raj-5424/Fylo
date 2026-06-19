@@ -1,0 +1,58 @@
+import { useState } from 'react';
+import { uploadFile } from '../services/api';
+import './FileUpload.css';
+
+export default function FileUpload({ onUploadSuccess }) {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [fileName, setFileName] = useState('');
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    setFileName(file ? file.name : '');
+    setError('');
+  };
+
+  const handleUpload = async (e) => {
+    e.preventDefault();
+    const file = e.target.file.files[0];
+
+    if (!file) {
+      setError('Please select a file');
+      return;
+    }
+
+    setLoading(true);
+    setError('');
+
+    try {
+      const port = await uploadFile(file);
+      onUploadSuccess(port, file.name);
+      e.target.reset();
+      setFileName('');
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="upload-container">
+      <h2>Upload File</h2>
+      <form onSubmit={handleUpload}>
+        <input
+          type="file"
+          name="file"
+          onChange={handleFileChange}
+          disabled={loading}
+        />
+        {fileName && <p className="file-name">Selected: {fileName}</p>}
+        <button type="submit" disabled={loading}>
+          {loading ? 'Uploading...' : 'Upload'}
+        </button>
+      </form>
+      {error && <p className="error">{error}</p>}
+    </div>
+  );
+}
