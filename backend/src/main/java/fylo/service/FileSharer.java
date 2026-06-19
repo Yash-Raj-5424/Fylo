@@ -12,36 +12,52 @@ import java.util.HashMap;
 
 public class FileSharer {
 
-    private final HashMap<Integer, String> availableFiles;
+    private final HashMap<String, FileEntry> availableFiles;
 
     public FileSharer() {
         this.availableFiles = new HashMap<>();
     }
 
-    public int offerFile(String filePath){
+    public String offerFile(String filePath){
+        String code;
         int port;
         while(true){
-            port = UploadUtils.generateCode();
-            if(!availableFiles.containsKey(port)){
-                availableFiles.put(port, filePath);
-                return port;
+            code = UploadUtils.generateToken();
+            if(!availableFiles.containsKey(code)){
+                port = UploadUtils.generateCode();
+                availableFiles.put(code, new FileEntry(filePath, port));
+                return code;
             }
         }
     }
 
-    public void startFileServer(int port) throws IOException {
-        String filePath = availableFiles.get(port);
+    public void startFileServer(String code) throws IOException {
+        FileEntry entry = availableFiles.get(code);
 
-        if(filePath == null){
-            System.out.println("No file found for the given port: " + port);
+        if(entry == null){
+            System.out.println("No file found for code: " + code);
             return;
         }
 
-        try(ServerSocket serverSocket = new ServerSocket(port)){
-            System.out.println("Serving file " + new File(filePath).getName() + " on port " + port);
+        try(ServerSocket serverSocket = new ServerSocket(entry.port)){
+            System.out.println("Serving file " + new File(entry.filePath).getName() + " on port " + entry.port);
             Socket clientSocket = serverSocket.accept();
             System.out.println("Client connected: " + clientSocket.getInetAddress());
-            new Thread(new FileTransferHandler(clientSocket, filePath)).start();
+            new Thread(new FileTransferHandler(clientSocket, entry.filePath)).start();
+        }
+    }
+
+    public FileEntry getFileEntry(String code) {
+        return availableFiles.get(code);
+    }
+
+    public static class FileEntry {
+        public final String filePath;
+        public final int port;
+
+        public FileEntry(String filePath, int port) {
+            this.filePath = filePath;
+            this.port = port;
         }
     }
 

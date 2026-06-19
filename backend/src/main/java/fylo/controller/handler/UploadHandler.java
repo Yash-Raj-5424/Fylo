@@ -84,17 +84,17 @@ public class UploadHandler implements HttpHandler {
             try (FileOutputStream fos = new FileOutputStream(filePath)) {
                 fos.write(result.fileContent);
             }
-            int port = fileSharer.offerFile(filePath);
+            String code = fileSharer.offerFile(filePath);
 
             new Thread(() -> {
                 try {
-                    fileSharer.startFileServer(port);
+                    fileSharer.startFileServer(code);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
             }).start();
 
-            String jsonResponse = "{\"port\": " + port + "}";
+            String jsonResponse = "{\"code\": \"" + code + "\"}";
             headers.add("Content-Type", "application/json");
             exchange.sendResponseHeaders(200, jsonResponse.getBytes().length);
 

@@ -1,8 +1,5 @@
 package fylo.controller;
 
-import com.sun.net.httpserver.Headers;
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import fylo.controller.handler.CORSHandler;
 import fylo.controller.handler.DownloadHandler;
@@ -11,12 +8,8 @@ import fylo.service.FileSharer;
 
 import java.io.*;
 import java.net.InetSocketAddress;
-import java.net.Socket;
-import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
-import org.apache.commons.io.IOUtils;
 
 public class FileController {
 
@@ -44,7 +37,7 @@ public class FileController {
         }
 
         server.createContext("/upload", new UploadHandler(fileSharer, uploadDir));
-        server.createContext("/download", new DownloadHandler());
+        server.createContext("/download", new DownloadHandler(fileSharer));
         server.createContext("/", new CORSHandler());
 
     }
@@ -61,12 +54,4 @@ public class FileController {
     }
 
 
-
-
-
-
-
-
 }
-
-

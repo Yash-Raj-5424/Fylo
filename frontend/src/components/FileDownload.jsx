@@ -3,15 +3,15 @@ import { downloadFile } from '../services/api';
 import './FileDownload.css';
 
 export default function FileDownload() {
-  const [port, setPort] = useState('');
+  const [code, setCode] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
   const handleDownload = async (e) => {
     e.preventDefault();
 
-    if (!port.trim()) {
-      setError('Please enter a port number');
+    if (!code.trim()) {
+      setError('Please enter a code');
       return;
     }
 
@@ -19,8 +19,8 @@ export default function FileDownload() {
     setError('');
 
     try {
-      await downloadFile(port);
-      setPort('');
+      await downloadFile(code);
+      setCode('');
     } catch (err) {
       setError(err.message);
     } finally {
@@ -33,11 +33,12 @@ export default function FileDownload() {
       <h2>Download File</h2>
       <form onSubmit={handleDownload}>
         <input
-          type="number"
-          placeholder="Enter port number"
-          value={port}
-          onChange={(e) => setPort(e.target.value)}
+          type="text"
+          placeholder="Enter code"
+          value={code}
+          onChange={(e) => setCode(e.target.value)}
           disabled={loading}
+          maxLength={6}
         />
         <button type="submit" disabled={loading}>
           {loading ? 'Downloading...' : 'Download'}

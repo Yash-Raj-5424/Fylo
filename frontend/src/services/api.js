@@ -15,15 +15,15 @@ export const uploadFile = async (file) => {
     }
 
     const data = await response.json();
-    return data.port;
+    return data.code;
   } catch (error) {
     throw new Error(`Upload error: ${error.message}`);
   }
 };
 
-export const downloadFile = async (port) => {
+export const downloadFile = async (code) => {
   try {
-    const response = await fetch(`${API_URL}/download/${port}`);
+    const response = await fetch(`${API_URL}/download/${code}`);
 
     if (!response.ok) {
       throw new Error(`Download failed: ${response.statusText}`);

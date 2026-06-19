@@ -7,8 +7,8 @@ import './App.css';
 function App() {
   const [shareData, setShareData] = useState(null);
 
-  const handleUploadSuccess = (port, fileName) => {
-    setShareData({ port, fileName });
+  const handleUploadSuccess = (code, fileName) => {
+    setShareData({ code, fileName });
   };
 
   return (
@@ -21,7 +21,7 @@ function App() {
       <main>
         <div className="content">
           <FileUpload onUploadSuccess={handleUploadSuccess} />
-          {shareData && <ShareInfo port={shareData.port} fileName={shareData.fileName} />}
+          {shareData && <ShareInfo code={shareData.code} fileName={shareData.fileName} />}
         </div>
 
         <div className="divider"></div>
