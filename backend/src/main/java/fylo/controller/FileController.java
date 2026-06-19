@@ -38,6 +38,7 @@ public class FileController {
 
         server.createContext("/upload", new UploadHandler(fileSharer, uploadDir));
         server.createContext("/download", new DownloadHandler(fileSharer));
+        server.createContext("/view", new DownloadHandler(fileSharer));
         server.createContext("/", new CORSHandler());
 
     }

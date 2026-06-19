@@ -32,6 +32,7 @@ public class DownloadHandler implements HttpHandler {
         }
 
         String path = exchange.getRequestURI().getPath();
+        boolean isView = path.startsWith("/view/");
         String code = path.substring(path.lastIndexOf('/') + 1);
 
         if (code.isEmpty()) {
@@ -83,8 +84,13 @@ public class DownloadHandler implements HttpHandler {
                 }
             }
 
-            headers.add("Content-Disposition", "attachment; filename=\"" + filename + "\"");
-            headers.add("Content-Type", "application/octet-stream");
+            if (isView) {
+                headers.add("Content-Disposition", "inline; filename=\"" + filename + "\"");
+                headers.add("Content-Type", getContentType(filename));
+            } else {
+                headers.add("Content-Disposition", "attachment; filename=\"" + filename + "\"");
+                headers.add("Content-Type", "application/octet-stream");
+            }
 
             exchange.sendResponseHeaders(200, tempFile.length());
 
@@ -109,6 +115,76 @@ public class DownloadHandler implements HttpHandler {
             try (OutputStream outStream = exchange.getResponseBody()) {
                 outStream.write(res.getBytes());
             }
+        }
+    }
+
+    private String getContentType(String filename) {
+        int dot = filename.lastIndexOf('.');
+        if (dot < 0) return "application/octet-stream";
+        String ext = filename.substring(dot + 1).toLowerCase();
+
+        switch (ext) {
+            case "jpg":
+            case "jpeg":
+                return "image/jpeg";
+            case "png":
+                return "image/png";
+            case "gif":
+                return "image/gif";
+            case "webp":
+                return "image/webp";
+            case "svg":
+                return "image/svg+xml";
+            case "bmp":
+                return "image/bmp";
+            case "ico":
+                return "image/x-icon";
+            case "pdf":
+                return "application/pdf";
+            case "mp4":
+                return "video/mp4";
+            case "webm":
+                return "video/webm";
+            case "avi":
+                return "video/x-msvideo";
+            case "mov":
+                return "video/quicktime";
+            case "mp3":
+                return "audio/mpeg";
+            case "wav":
+                return "audio/wav";
+            case "flac":
+                return "audio/flac";
+            case "m4a":
+                return "audio/mp4";
+            case "txt":
+            case "csv":
+            case "json":
+            case "xml":
+            case "html":
+            case "htm":
+            case "css":
+            case "js":
+            case "md":
+            case "yaml":
+            case "yml":
+            case "toml":
+            case "ini":
+            case "cfg":
+            case "log":
+            case "java":
+            case "py":
+            case "ts":
+            case "tsx":
+            case "jsx":
+            case "rb":
+            case "go":
+            case "rs":
+            case "sh":
+            case "bat":
+                return "text/plain; charset=utf-8";
+            default:
+                return "application/octet-stream";
         }
     }
 }

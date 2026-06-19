@@ -51,6 +51,12 @@
   text-align: right;
 }
 
+.action-cell {
+  display: flex;
+  gap: 4px;
+  justify-content: flex-end;
+}
+
 .action-cell button {
   padding: 4px 10px;
   background-color: #007bff;
@@ -63,6 +69,14 @@
 
 .action-cell button:hover {
   background-color: #0056b3;
+}
+
+.preview-btn {
+  background-color: #28a745 !important;
+}
+
+.preview-btn:hover {
+  background-color: #218838 !important;
 }
 
 .copy-all {
