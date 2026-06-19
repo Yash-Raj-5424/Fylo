@@ -3,11 +3,9 @@ package fylo.controller.handler;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-import fylo.controller.FileController;
 import fylo.parser.MultipartParser;
 import fylo.parser.ParseResult;
 import fylo.service.FileSharer;
-import org.apache.commons.io.IOUtils;
 
 import java.io.*;
 import java.util.UUID;
@@ -55,7 +53,12 @@ public class UploadHandler implements HttpHandler {
             String boundary = contentType.substring(contentType.indexOf("boundary=") + 9);
 
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            IOUtils.copy(exchange.getRequestBody(), baos);
+            byte[] buf = new byte[4096];
+            int n;
+            InputStream is = exchange.getRequestBody();
+            while ((n = is.read(buf)) != -1) {
+                baos.write(buf, 0, n);
+            }
             byte[] requestData = baos.toByteArray();
 
             MultipartParser parser = new MultipartParser(requestData, boundary);

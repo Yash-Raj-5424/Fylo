@@ -25,7 +25,7 @@ public class DownloadHandler implements HttpHandler {
         }
 
         String path = exchange.getRequestURI().getPath();
-        String portStr = path.substring(path.lastIndexOf('/' + 1));
+        String portStr = path.substring(path.lastIndexOf('/') + 1);
 
         try {
 
@@ -49,7 +49,7 @@ public class DownloadHandler implements HttpHandler {
                     }
 
                     String header = headerBaos.toString().trim();
-                    if (header.startsWith("Filename: ")) {
+                    if (header.startsWith("FileName: ")) {
                         filename = header.substring("Filename: ".length());
                     }
 
