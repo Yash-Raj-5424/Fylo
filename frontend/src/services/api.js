@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:8080';
+const API_URL = '';
 
 export const uploadFile = async (file) => {
   const formData = new FormData();
