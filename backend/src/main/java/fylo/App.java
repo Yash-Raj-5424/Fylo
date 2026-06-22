@@ -7,7 +7,9 @@ public class App {
     public static void main(String[] args) {
 
         try{
-            FileController fileController = new FileController(8080);
+            String portStr = System.getenv("PORT");
+            int port = portStr != null ? Integer.parseInt(portStr) : 8080;
+            FileController fileController = new FileController(port);
             fileController.start();
 
             System.out.println("Server started on port 8080. Press Ctrl+C to stop");
