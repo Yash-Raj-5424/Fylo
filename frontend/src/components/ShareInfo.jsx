@@ -1,4 +1,4 @@
-import { deleteFile } from '../services/api';
+import { API_URL, deleteFile } from '../services/api';
 import './ShareInfo.css';
 
 const PREVIEWABLE_EXTS = new Set([
@@ -59,7 +59,7 @@ export default function ShareInfo({ files, onDelete }) {
                 {isPreviewable(f.fileName) && (
                   <button
                     className="preview-btn"
-                    onClick={() => window.open(`http://localhost:8080/view/${f.code}`, '_blank')}
+                    onClick={() => window.open(`${API_URL}/view/${f.code}`, '_blank')}
                   >
                     Preview
                   </button>

@@ -1,4 +1,4 @@
-const API_URL = 'https://fylo-lk8g.onrender.com';
+export const API_URL = 'https://fylo-lk8g.onrender.com';
 
 export const uploadFile = async (file) => {
   const formData = new FormData();
